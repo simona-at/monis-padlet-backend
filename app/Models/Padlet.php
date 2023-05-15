@@ -22,11 +22,27 @@ class Padlet extends Model
     }
 
     /**
+     * padlet has zero, one or more likes
+     * @return HasMany
+     */
+    public function likes() : HasMany {
+        return $this->hasMany(Like::class);
+    }
+
+    /**
+     * padlet has zero, one or more comments
+     * @return HasMany
+     */
+    public function comments() : HasMany {
+        return $this->hasMany(Comment::class);
+    }
+
+    /**
      * padlet has zero, one or more users
      * @return BelongsToMany
      */
     public function users() : BelongsToMany {
-        return $this->belongsToMany(User::class)->withTimestamps();
+        return $this->belongsToMany(User::class)->withTimestamps()->withPivot('user_role');
     }
 
 }

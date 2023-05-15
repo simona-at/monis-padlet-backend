@@ -7,10 +7,11 @@
         <title>Padlet von Simona</title>
     </head>
     <body>
-{{--        <ul>--}}
-{{--            @foreach($padlets as $padlet)--}}
-{{--                <li><h3>Titel {{$padlet->title}}</h3>Beschreibung: {{$padlet->description}}</li>--}}
-{{--            @endforeach--}}
-{{--        </ul>--}}
+        <ul>
+            <h1>{{$padlet->title}}</h1>
+            @foreach($padlet->users as $user)
+                <li><h3>User: {{$user->first_name}} {{$user->last_name}}</h3>Rolle: {{$user->pivot->user_role}}</li>
+            @endforeach
+        </ul>
     </body>
 </html>

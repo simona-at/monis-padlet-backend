@@ -49,6 +49,6 @@ class User extends Authenticatable
      * @return BelongsToMany
      */
     public function padlets() : BelongsToMany{
-        return $this->belongsToMany(Padlet::class)->withTimestamps();
+        return $this->belongsToMany(Padlet::class)->withTimestamps()->withPivot('user_role');
     }
 }

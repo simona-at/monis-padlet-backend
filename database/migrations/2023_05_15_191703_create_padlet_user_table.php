@@ -35,6 +35,9 @@ return new class extends Migration
 
 //            $table->foreignId('user_id')->constrained()->onDelete('cascade');
 
+            $table->string('user_role')->default('owner');
+//            $table->string('user_role')->nullable();
+
             $table->timestamps();
 
             $table->primary(['padlet_id', 'user_id']);

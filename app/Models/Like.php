@@ -6,17 +6,18 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Image extends Model
+class Like extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['url', 'title'];
+    protected $fillable = ['value'];
 
     /**
-     * image belongs exactly to one padlet
+     * like belongs exactly to one padlet
      * @return BelongsTo
      */
     public function padlet() : BelongsTo {
         return $this->belongsTo(Padlet::class);
     }
+
 }

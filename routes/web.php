@@ -15,10 +15,18 @@ use Illuminate\Support\Facades\Route;
 */
 
 
+//Route::get('/', function () {
+//    $padlets = Padlet::all();
+//    return $padlets;
+//});
+
+
+
 Route::get('/', function () {
-    $padlets = Padlet::all();
-    return $padlets;
+    $padlet = App\Models\Padlet::find(2);
+    return view('welcome', compact('padlet'));
 });
+
 
 
 //Route::get('/', function () {
