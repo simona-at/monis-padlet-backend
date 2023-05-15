@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Padlet;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,6 +14,25 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+
 Route::get('/', function () {
-    return view('welcome');
+    $padlets = Padlet::all();
+    return $padlets;
 });
+
+
+//Route::get('/', function () {
+//    $padlets = DB::table('padlets')->get();
+//    return $padlets;
+//});
+
+
+//Route::get('/entries', function () {
+//    $entries = DB::table('entries')->get();
+//    return view('welcome', compact('entries'));
+//});
+//
+//Route::get('/entries/{id}', function ($id){
+//    $entry = DB::table('entries')->find($id);
+//    dd($entry);
+//});
