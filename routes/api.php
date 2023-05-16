@@ -25,3 +25,4 @@ Route::get('/padlets/{id}', [PadletController::class, 'findByID']);
 Route::get('/padlets/checkID/{id}', [PadletController::class, 'checkID']);
 
 Route::post('/padlets', [PadletController::class, 'save']);
+Route::put('/padlets/{id}', [PadletController::class, 'update']);

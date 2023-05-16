@@ -79,6 +79,99 @@ class PadletController extends Controller
     }
 
 
+    /**
+     * update existing padlet
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function update(Request $request, int $padlet_id) : JsonResponse {
+
+        DB::beginTransaction();
+
+        try {
+
+            $padlet = Padlet::with(['users', 'images', 'likes', 'comments'])->where('id', $padlet_id)->first();
+            $user_ids = [];
+//            $testarray = [];
+
+            if($padlet != null) {
+
+                if($padlet['users']){
+                    foreach ($padlet['users'] as $user){
+                        array_push($user_ids, $user['id']);
+                    }
+                }
+
+                $request = $this->parseRequest($request);
+
+                $padlet->update($request->all());
+
+
+                $padlet->images()->delete();
+
+                if (isset($request['images']) && is_array($request['images'])) {
+                    foreach ($request['images'] as $image) {
+                        $image = Image::firstOrNew([
+                            'url' => $image['url'],
+                            'title' => $image['title']
+                        ]);
+                        $padlet->images()->save($image);
+                    }
+                }
+
+                //add ids to user_ids array with only knowing email
+                if (isset($request['users']) && is_array($request['users'])) {
+                    foreach ($request['users'] as $user){
+
+                        $user_mail = $user['email'];
+                        $newuser = User::with(['padlets'])->where('email', $user_mail)->first();
+                        array_push($user_ids, $newuser['id']);
+
+                    }
+                }
+
+                //remove possible multiple user ids (if user is for example added twice):
+                $user_ids = array_unique($user_ids);
+                $user_ids = array_values($user_ids);
+
+                $padlet->users()->sync($user_ids);
+
+
+                //set right roles to users
+                if (isset($request['users']) && is_array($request['users'])) {
+                    foreach ($request['users'] as $user){
+
+                        $newuser = User::with(['padlets'])->where('email', $user_mail)->first();
+
+                        $user_role = $user['user_role'];
+
+//                        $newuser['padlets']->where('id', $padlet_id)->pivot->update(['user_role' => $user_role]);
+//                        $newuser->padlets->pivot->update(['user_role' => $user_role]);
+//                        $newuser->pivot->save();
+
+                        $currentPadlet = $newuser['padlets']->where('id', $padlet_id)->first();
+                        $currentPadlet['pivot']->update(['user_role' => $user_role]);
+
+//                        array_push($testarray, $currentPadlet['id']);
+                    }
+                }
+
+                $padlet->save();
+
+            }
+            DB::commit();
+
+            $updated_padlet = Padlet::with(['users', 'images', 'likes', 'comments'])->where('id', $padlet_id)->first();
+            return response()->json($updated_padlet, 200);
+//            return response()->json($testarray, 200);
+
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json("saving padlet failed: " . $e->getMessage(), 420);
+        }
+
+    }
 
 
     private function parseRequest(Request $request) : Request {
