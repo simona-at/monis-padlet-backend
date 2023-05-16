@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PadletController;
 use App\Models\Padlet;
 use Illuminate\Support\Facades\Route;
 
@@ -14,18 +15,21 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+//Route::get('/', [PadletController::class, 'index']);
+//Route::get('/padlets', [PadletController::class, 'index']);
+//Route::get('/padlets/{padlet}', [PadletController::class, 'show']);
+
+
+
+//Route::get('/', function () {
+//    $padlet = App\Models\Padlet::find(2);
+//    return view('welcome', compact('padlet'));
+//});
 
 //Route::get('/', function () {
 //    $padlets = Padlet::all();
 //    return $padlets;
 //});
-
-
-
-Route::get('/', function () {
-    $padlet = App\Models\Padlet::find(2);
-    return view('welcome', compact('padlet'));
-});
 
 
 

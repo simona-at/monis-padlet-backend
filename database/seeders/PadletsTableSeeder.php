@@ -56,7 +56,7 @@ class PadletsTableSeeder extends Seeder
         $padlet1->comments()->save($comment1);
 
 
-//        $user = User::all()->where('email', "=", "hallo@simona.at");
+//        $user = User::all()->where('email', "hallo@simona.at");
 //        $padlet1->users()->sync($user);
 //        $padlet1->save();
 
@@ -76,8 +76,12 @@ class PadletsTableSeeder extends Seeder
         $padlet2->users()->sync($users);
         $padlet2->save();
 
-        $viewer = $padlet2->users->where('email', "=", "hallo@mjk-media.com")->first(); //funktioniert nur an einzelnen user -> keine arrays
+        $viewer = $padlet2->users->where('email', "hallo@mjk-media.com")->first(); //funktioniert nur an einzelnen user -> keine arrays
         $viewer->pivot->user_role = "viewer";
+        $viewer->pivot->save();
+
+        $viewer = $padlet2->users->where('first_name', "Alina")->first(); //funktioniert nur an einzelnen user -> keine arrays
+        $viewer->pivot->user_role = "editor";
         $viewer->pivot->save();
 
 
@@ -96,15 +100,15 @@ class PadletsTableSeeder extends Seeder
 
 
 
-        $padlet1_users = User::all()->where('email', "=", "hallo@simona.at");
+        $padlet1_users = User::all()->where('email', "hallo@simona.at");
         $padlet1->users()->sync($padlet1_users);
         $padlet1->save();
 
         //Use-Case: Nutzer (hallo@mjk-media.com) mit Rolle (viewer) zu 1. Padlet hinzufügen
-        $newuser= User::all()->where('email', "=", "hallo@mjk-media.com")->first();
+        $newuser= User::all()->where('email', "hallo@mjk-media.com")->first();
         $padlet1_users->push($newuser);
         $padlet1->users()->sync($padlet1_users);
-        $newuser = $padlet1->users->where('email', "=", "hallo@mjk-media.com")->first();
+        $newuser = $padlet1->users->where('email', "hallo@mjk-media.com")->first();
         $newuser->pivot->user_role = "viewer";
         $newuser->pivot->save();
         $padlet1->save();
