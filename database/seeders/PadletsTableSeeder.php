@@ -24,8 +24,6 @@ class PadletsTableSeeder extends Seeder
         $padlet1 = new Padlet();
         $padlet1->title = "Sammlung von Lieblingshundenamen";
         $padlet1->description = "Apollo, Jeanny, Charlie, Django, Snoopy, Emily, Cindy. Kommentiert gerne mit euren liebsten Hundenamen :)";
-        $padlet1->created_at = date("Y-m-d H:i:s");
-        $padlet1->updated_at = date("Y-m-d H:i:s");
         $padlet1->save();
 
         $image1 = new Image();
@@ -35,12 +33,28 @@ class PadletsTableSeeder extends Seeder
         $padlet1->images()->saveMany([$image1]);
 
         $like1 = new Like();
-        $like1->value = "1";
+//        $like1->value = "1";
+        $like1->user_id = "1";
         $padlet1->likes()->save($like1);
+
+        $like2 = new Like();
+//        $like2->value = "1";
+        $like2->user_id = "2";
+        $padlet1->likes()->save($like2);
+
+        $like3 = new Like();
+//        $like3->value = "1";
+        $like3->user_id = "3";
+        $padlet1->likes()->save($like3);
+
+
+
 
         $comment1 = new Comment();
         $comment1->content = "Das ist das erste Kommentar unter Padlet Nr. 1";
-        $padlet1->likes()->save($comment1);
+        $comment1->user_id = "1";
+        $padlet1->comments()->save($comment1);
+
 
 //        $user = User::all()->where('email', "=", "hallo@simona.at");
 //        $padlet1->users()->sync($user);
@@ -49,9 +63,14 @@ class PadletsTableSeeder extends Seeder
         $padlet2 = new Padlet();
         $padlet2->title = "Sammlung von Lieblingskatzennamen";
         $padlet2->description = "Felix, Moritz, Marty, Gloria, Pauli, Fips, Zoe. Kommentiert gerne mit euren liebsten Katzennamen :)";
-        $padlet2->created_at = date("Y-m-d H:i:s");
-        $padlet2->updated_at = date("Y-m-d H:i:s");
+        $padlet2->is_private = true;
         $padlet2->save();
+
+
+        $like4 = new Like();
+//        $like4->value = "1";
+        $like4->user_id = "2";
+        $padlet2->likes()->save($like4);
 
         $users = User::all();//->pluck("id");
         $padlet2->users()->sync($users);
@@ -89,6 +108,12 @@ class PadletsTableSeeder extends Seeder
         $newuser->pivot->user_role = "viewer";
         $newuser->pivot->save();
         $padlet1->save();
+
+
+        $padlet3 = new Padlet();
+        $padlet3->title = "Padlet von anonymem Nutzer";
+        $padlet3->description = "anonymer Inhalt";
+        $padlet3->save();
 
     }
 }

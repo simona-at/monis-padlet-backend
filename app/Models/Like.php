@@ -10,14 +10,21 @@ class Like extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['value'];
+    protected $fillable = ['user_id'];
 
     /**
-     * like belongs exactly to one padlet
+     * like belongs exactly to one user
      * @return BelongsTo
      */
     public function padlet() : BelongsTo {
         return $this->belongsTo(Padlet::class);
     }
 
+    /**
+     * comment belongs exactly to one user
+     * @return BelongsTo
+     */
+    public function user() : BelongsTo {
+        return $this->belongsTo(User::class);
+    }
 }

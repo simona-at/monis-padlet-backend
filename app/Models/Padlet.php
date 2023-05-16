@@ -11,7 +11,7 @@ class Padlet extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'description'];
+    protected $fillable = ['title', 'description', 'is_private'];
 
     /**
      * padlet has zero, one or more images

@@ -10,7 +10,7 @@ class Comment extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['content'];
+    protected $fillable = ['content', 'user_id'];
 
     /**
      * comment belongs exactly to one padlet
@@ -18,5 +18,13 @@ class Comment extends Model
      */
     public function padlet() : BelongsTo {
         return $this->belongsTo(Padlet::class);
+    }
+
+    /**
+     * comment belongs exactly to one padlet
+     * @return BelongsTo
+     */
+    public function user() : BelongsTo {
+        return $this->belongsTo(User::class);
     }
 }

@@ -14,8 +14,8 @@ return new class extends Migration
     public function up()
     {
         Schema::create('likes', function (Blueprint $table) {
-            $table->id();
-            $table->integer('value')->default('0');
+//            $table->id();
+//            $table->integer('value')->default('0');
 
             //fk field:
             $table->bigInteger('padlet_id')->unsigned();
@@ -25,7 +25,17 @@ return new class extends Migration
                 ->references('id')->on('padlets')
                 ->onDelete('cascade');
 
+            //fk field:
+            $table->bigInteger('user_id')->unsigned();
+
+            //constraint:
+            $table->foreign('user_id')
+                ->references('id')->on('users')
+                ->onDelete('cascade');
+
             $table->timestamps();
+
+            $table->primary(['padlet_id', 'user_id']);
         });
     }
 

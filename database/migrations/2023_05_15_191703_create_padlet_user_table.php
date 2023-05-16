@@ -31,8 +31,7 @@ return new class extends Migration
                 ->references('id')->on('users')
                 ->onDelete('cascade');
 
-            //            $table->foreignId('padlet_id')->constrained()->onDelete('cascade');
-
+//            $table->foreignId('padlet_id')->constrained()->onDelete('cascade');
 //            $table->foreignId('user_id')->constrained()->onDelete('cascade');
 
             $table->string('user_role')->default('owner');
