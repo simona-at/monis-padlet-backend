@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Comment;
 use App\Models\Image;
+use App\Models\Like;
 use App\Models\Padlet;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -33,7 +35,6 @@ class PadletController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    //TODO: user id evtl als parameter mitgeben und nicht im request selbst?
     public function save(Request $request) : JsonResponse {
 
         $request = $this->parseRequest($request);
@@ -98,7 +99,9 @@ class PadletController extends Controller
 
                 if($padlet['users']){
                     foreach ($padlet['users'] as $user){
-                        array_push($user_ids, $user['id']);
+                        if($user['pivot']['user_role'] == "owner"){
+                            array_push($user_ids, $user['id']);
+                        }
                     }
                 }
 
@@ -141,6 +144,7 @@ class PadletController extends Controller
                 if (isset($request['users']) && is_array($request['users'])) {
                     foreach ($request['users'] as $user){
 
+                        $user_mail = $user['email'];
                         $newuser = User::with(['padlets'])->where('email', $user_mail)->first();
 
                         $user_role = $user['user_role'];
@@ -173,6 +177,98 @@ class PadletController extends Controller
 
     }
 
+
+    public function delete(string $id) : JsonResponse{
+        $padlet = Padlet::where('id', $id)->first();
+        if($padlet != null){
+            $padlet->delete();
+            return response()->json('padlet ('. $id .') successfully deleted', 200);
+        }
+        else
+            return response()->json('padlet could not be deleted - it does not exist', 422);
+    }
+
+
+    public function saveComment(Request $request, int $padlet_id) : JsonResponse {
+
+        $request = $this->parseRequest($request);
+
+        DB::beginTransaction();
+
+        try {
+            $padlet = Padlet::with(['users', 'images', 'likes', 'comments'])->where('id', $padlet_id)->first();
+
+            if($padlet != null) {
+
+                if(isset($request['comments']) && is_array($request['comments'])){
+                    foreach ($request['comments'] as $comment) {
+                        $comment = Comment::firstOrNew([
+                            'content' => $comment['content'],
+                            'user_id' => $comment['user_id'],
+                            'padlet_id' => $padlet_id
+                        ]);
+                        $padlet->comments()->save($comment);
+                    }
+                }
+            }
+            DB::commit();
+            return response()->json($padlet, 200);
+        }
+        catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json("saving comment failed: " . $e->getMessage(), 420);
+        }
+    }
+
+    public function saveLike(Request $request, int $padlet_id) : JsonResponse {
+
+        $request = $this->parseRequest($request);
+
+        DB::beginTransaction();
+
+        try {
+            $padlet = Padlet::with(['users', 'images', 'likes', 'comments'])->where('id', $padlet_id)->first();
+
+            if($padlet != null) {
+
+                if(isset($request['likes']) && is_array($request['likes'])){
+                    foreach ($request['likes'] as $like) {
+                        $like = Like::firstOrNew([
+                            'user_id' => $like['user_id'],
+                            'padlet_id' => $padlet_id
+                        ]);
+                        $padlet->likes()->save($like);
+                    }
+                }
+            }
+            DB::commit();
+            return response()->json($padlet, 200);
+        }
+        catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json("saving like failed: " . $e->getMessage(), 420);
+        }
+    }
+
+    public function deleteLike(Request $request, string $id) : JsonResponse{
+
+        $request = $this->parseRequest($request);
+        $padlet = Padlet::where('id', $id)->first();
+
+        if($padlet != null){
+
+            if(isset($request['likes']) && is_array($request['likes'])){
+                foreach ($request['likes'] as $like) {
+                    $deleteLike = Like::where('padlet_id', $id)->where('user_id', $like['user_id']);
+                    $deleteLike->delete();
+                }
+            }
+
+            return response()->json('likes on padlet ('. $id .') successfully deleted', 200);
+        }
+        else
+            return response()->json('padlet could not be deleted - it does not exist', 422);
+    }
 
     private function parseRequest(Request $request) : Request {
         $date = new \DateTime($request->published);

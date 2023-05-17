@@ -26,3 +26,8 @@ Route::get('/padlets/checkID/{id}', [PadletController::class, 'checkID']);
 
 Route::post('/padlets', [PadletController::class, 'save']);
 Route::put('/padlets/{id}', [PadletController::class, 'update']);
+Route::delete('/padlets/{id}', [PadletController::class, 'delete']);
+Route::put('/padlets/comments/{id}', [PadletController::class, 'saveComment']);
+Route::put('/padlets/likes/{id}', [PadletController::class, 'saveLike']);
+Route::delete('/padlets/likes/{id}', [PadletController::class, 'deleteLike']);
+
