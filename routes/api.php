@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\LikeController;
 use App\Http\Controllers\PadletController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -27,7 +29,8 @@ Route::get('/padlets/checkID/{id}', [PadletController::class, 'checkID']);
 Route::post('/padlets', [PadletController::class, 'save']);
 Route::put('/padlets/{id}', [PadletController::class, 'update']);
 Route::delete('/padlets/{id}', [PadletController::class, 'delete']);
-Route::put('/padlets/comments/{id}', [PadletController::class, 'saveComment']);
-Route::put('/padlets/likes/{id}', [PadletController::class, 'saveLike']);
-Route::delete('/padlets/likes/{id}', [PadletController::class, 'deleteLike']);
+
+Route::put('/padlets/comments/{id}', [CommentController::class, 'saveComment']);
+Route::put('/padlets/likes/{id}', [LikeController::class, 'saveLike']);
+Route::delete('/padlets/likes/{id}', [LikeController::class, 'deleteLike']);
 

@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Comment;
 use App\Models\Image;
-use App\Models\Like;
 use App\Models\Padlet;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -14,16 +12,25 @@ use Illuminate\Support\Facades\DB;
 class PadletController extends Controller
 {
     public function index() : JsonResponse {
-//        $padlets = Padlet::all();
         $padlets = Padlet::with(['users', 'images', 'likes', 'comments'])->get();
         return response()->json($padlets, 200);
     }
 
+    /**
+     * function returns padlet with id: $id
+     * @param int $id
+     * @return JsonResponse
+     */
     public function findByID(int $id) : JsonResponse {
         $padlet = Padlet::where('id', $id)->with(['users', 'images', 'likes', 'comments'])->first();
         return $padlet != null ? response()->json($padlet, 200) : response()->json(null, 200);
     }
 
+    /**
+     * function checks if padlet with id: $id exists
+     * @param string $id
+     * @return JsonResponse
+     */
     public function checkID(string $id) : JsonResponse {
         $padlet = Padlet::where('id', $id)->first();
         return $padlet != null ? response()->json(true, 200) : response()->json(false, 200);
@@ -31,7 +38,7 @@ class PadletController extends Controller
 
 
     /**
-     * save a new padlet
+     * function saves a new padlet with title, description, visibility and images
      * @param Request $request
      * @return JsonResponse
      */
@@ -41,8 +48,6 @@ class PadletController extends Controller
         DB::beginTransaction();
 
         try {
-//            $padlet = Padlet::create($request->all());
-
             $is_private = $request['is_private'];
             if(!isset($request['users'])) $is_private = 0;
 
@@ -81,20 +86,16 @@ class PadletController extends Controller
 
 
     /**
-     * update existing padlet
+     * function updates existing padlet with id: $id; overrides images and users (and enables to set user roles)
      * @param Request $request
      * @return JsonResponse
      */
     public function update(Request $request, int $padlet_id) : JsonResponse {
 
         DB::beginTransaction();
-
         try {
-
             $padlet = Padlet::with(['users', 'images', 'likes', 'comments'])->where('id', $padlet_id)->first();
             $user_ids = [];
-//            $testarray = [];
-
             if($padlet != null) {
 
                 if($padlet['users']){
@@ -106,10 +107,7 @@ class PadletController extends Controller
                 }
 
                 $request = $this->parseRequest($request);
-
                 $padlet->update($request->all());
-
-
                 $padlet->images()->delete();
 
                 if (isset($request['images']) && is_array($request['images'])) {
@@ -125,11 +123,9 @@ class PadletController extends Controller
                 //add ids to user_ids array with only knowing email
                 if (isset($request['users']) && is_array($request['users'])) {
                     foreach ($request['users'] as $user){
-
                         $user_mail = $user['email'];
                         $newuser = User::with(['padlets'])->where('email', $user_mail)->first();
                         array_push($user_ids, $newuser['id']);
-
                     }
                 }
 
@@ -139,37 +135,21 @@ class PadletController extends Controller
 
                 $padlet->users()->sync($user_ids);
 
-
                 //set right roles to users
                 if (isset($request['users']) && is_array($request['users'])) {
                     foreach ($request['users'] as $user){
-
                         $user_mail = $user['email'];
                         $newuser = User::with(['padlets'])->where('email', $user_mail)->first();
-
                         $user_role = $user['user_role'];
-
-//                        $newuser['padlets']->where('id', $padlet_id)->pivot->update(['user_role' => $user_role]);
-//                        $newuser->padlets->pivot->update(['user_role' => $user_role]);
-//                        $newuser->pivot->save();
-
                         $currentPadlet = $newuser['padlets']->where('id', $padlet_id)->first();
                         $currentPadlet['pivot']->update(['user_role' => $user_role]);
-
-//                        array_push($testarray, $currentPadlet['id']);
                     }
                 }
-
                 $padlet->save();
-
             }
             DB::commit();
-
             $updated_padlet = Padlet::with(['users', 'images', 'likes', 'comments'])->where('id', $padlet_id)->first();
             return response()->json($updated_padlet, 200);
-//            return response()->json($testarray, 200);
-
-
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json("saving padlet failed: " . $e->getMessage(), 420);
@@ -178,6 +158,11 @@ class PadletController extends Controller
     }
 
 
+    /**
+     * function deletes padlet with id: $id
+     * @param string $id
+     * @return JsonResponse
+     */
     public function delete(string $id) : JsonResponse{
         $padlet = Padlet::where('id', $id)->first();
         if($padlet != null){
@@ -189,87 +174,11 @@ class PadletController extends Controller
     }
 
 
-    public function saveComment(Request $request, int $padlet_id) : JsonResponse {
-
-        $request = $this->parseRequest($request);
-
-        DB::beginTransaction();
-
-        try {
-            $padlet = Padlet::with(['users', 'images', 'likes', 'comments'])->where('id', $padlet_id)->first();
-
-            if($padlet != null) {
-
-                if(isset($request['comments']) && is_array($request['comments'])){
-                    foreach ($request['comments'] as $comment) {
-                        $comment = Comment::firstOrNew([
-                            'content' => $comment['content'],
-                            'user_id' => $comment['user_id'],
-                            'padlet_id' => $padlet_id
-                        ]);
-                        $padlet->comments()->save($comment);
-                    }
-                }
-            }
-            DB::commit();
-            return response()->json($padlet, 200);
-        }
-        catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json("saving comment failed: " . $e->getMessage(), 420);
-        }
-    }
-
-    public function saveLike(Request $request, int $padlet_id) : JsonResponse {
-
-        $request = $this->parseRequest($request);
-
-        DB::beginTransaction();
-
-        try {
-            $padlet = Padlet::with(['users', 'images', 'likes', 'comments'])->where('id', $padlet_id)->first();
-
-            if($padlet != null) {
-
-                if(isset($request['likes']) && is_array($request['likes'])){
-                    foreach ($request['likes'] as $like) {
-                        $like = Like::firstOrNew([
-                            'user_id' => $like['user_id'],
-                            'padlet_id' => $padlet_id
-                        ]);
-                        $padlet->likes()->save($like);
-                    }
-                }
-            }
-            DB::commit();
-            return response()->json($padlet, 200);
-        }
-        catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json("saving like failed: " . $e->getMessage(), 420);
-        }
-    }
-
-    public function deleteLike(Request $request, string $id) : JsonResponse{
-
-        $request = $this->parseRequest($request);
-        $padlet = Padlet::where('id', $id)->first();
-
-        if($padlet != null){
-
-            if(isset($request['likes']) && is_array($request['likes'])){
-                foreach ($request['likes'] as $like) {
-                    $deleteLike = Like::where('padlet_id', $id)->where('user_id', $like['user_id']);
-                    $deleteLike->delete();
-                }
-            }
-
-            return response()->json('likes on padlet ('. $id .') successfully deleted', 200);
-        }
-        else
-            return response()->json('padlet could not be deleted - it does not exist', 422);
-    }
-
+    /**
+     * @param Request $request
+     * @return Request
+     * @throws \Exception
+     */
     private function parseRequest(Request $request) : Request {
         $date = new \DateTime($request->published);
         $request['published'] = $date;
