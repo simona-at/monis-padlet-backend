@@ -114,7 +114,8 @@ class PadletController extends Controller
                     foreach ($request['images'] as $image) {
                         $image = Image::firstOrNew([
                             'url' => $image['url'],
-                            'title' => $image['title']
+                            'title' => $image['title'],
+                            'padlet_id' => $padlet_id
                         ]);
                         $padlet->images()->save($image);
                     }
