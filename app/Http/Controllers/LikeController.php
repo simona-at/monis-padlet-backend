@@ -51,23 +51,26 @@ class LikeController extends Controller
      * @param string $id
      * @return JsonResponse
      */
-    public function deleteLike(Request $request, string $id) : JsonResponse{
+    public function deleteLike(string $padlet_id, string $user_id) : JsonResponse{
 
-        $request = $this->parseRequest($request);
-        $padlet = Padlet::where('id', $id)->first();
+//        $request = $this->parseRequest($request);
+        $padlet = Padlet::where('id', $padlet_id)->first();
         if($padlet != null){
 
-            if(isset($request['likes']) && is_array($request['likes'])){
-                foreach ($request['likes'] as $like) {
-                    $deleteLike = Like::where('padlet_id', $id)->where('user_id', $like['user_id']);
-                    $deleteLike->delete();
-                }
-            }
+//            if(isset($request['likes']) && is_array($request['likes'])){
+//                foreach ($request['likes'] as $like) {
+//                    $deleteLike = Like::where('padlet_id', $id)->where('user_id', $like['user_id']);
+//                    $deleteLike->delete();
+//                }
+//            }
 
-            return response()->json('likes on padlet ('. $id .') successfully deleted', 200);
+            $deleteLike = Like::where('padlet_id', $padlet_id)->where('user_id', $user_id);
+            $deleteLike->delete();
+
+            return response()->json('likes on padlet ('. $padlet_id .') successfully deleted', 200);
         }
         else
-            return response()->json('padlet could not be deleted - it does not exist', 422);
+            return response()->json('like could not be deleted - it does not exist', 422);
     }
 
 

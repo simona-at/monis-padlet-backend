@@ -32,5 +32,5 @@ Route::delete('/padlets/{id}', [PadletController::class, 'delete']);
 
 Route::put('/padlets/comments/{id}', [CommentController::class, 'saveComment']);
 Route::put('/padlets/likes/{id}', [LikeController::class, 'saveLike']);
-Route::delete('/padlets/likes/{id}', [LikeController::class, 'deleteLike']);
+Route::delete('/padlets/likes/{padlet_id}/{user_id}', [LikeController::class, 'deleteLike']);
 
