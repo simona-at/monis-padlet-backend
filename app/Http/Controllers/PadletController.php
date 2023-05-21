@@ -141,7 +141,7 @@ class PadletController extends Controller
                     foreach ($request['users'] as $user){
                         $user_mail = $user['email'];
                         $newuser = User::with(['padlets'])->where('email', $user_mail)->first();
-                        $user_role = $user['user_role'];
+                        $user_role = $user['pivot']['user_role'];
                         $currentPadlet = $newuser['padlets']->where('id', $padlet_id)->first();
                         $currentPadlet['pivot']->update(['user_role' => $user_role]);
                     }
