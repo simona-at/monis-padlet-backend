@@ -34,3 +34,4 @@ Route::put('/padlets/comments/{id}', [CommentController::class, 'saveComment']);
 Route::put('/padlets/likes/{id}', [LikeController::class, 'saveLike']);
 Route::delete('/padlets/likes/{padlet_id}/{user_id}', [LikeController::class, 'deleteLike']);
 
+Route::get('/users', [\App\Http\Controllers\UserController::class, 'getAllUsers']);
