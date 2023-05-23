@@ -32,15 +32,22 @@ class UsersTableSeeder extends Seeder
         $user3 = new User();
         $user3->first_name = "Alina";
         $user3->last_name = "Ascher";
-        $user3->email = "alina@ascher.com";
+        $user3->email = "alina.ascher@gmx.at";
         $user3->password = bcrypt("secret");
         $user3->save();
 
         $user4 = new User();
-        $user4->first_name = "Susi";
-        $user4->last_name = "Bauer";
-        $user4->email = "s.bauer@gmail.com";
-        $user4->password = bcrypt("secret");
+        $user4->first_name = "Elmar";
+        $user4->last_name = "Putz";
+        $user4->email = "elmar.putz@fh-hagenberg.at";
+        $user4->password = bcrypt("supersecret");
         $user4->save();
+
+        $user5 = new User();
+        $user5->first_name = "Johannes";
+        $user5->last_name = "Schönböck";
+        $user5->email = "johannes.schoenboeck@fh-hagenberg.at";
+        $user5->password = bcrypt("superdupersecret");
+        $user5->save();
     }
 }

@@ -3,6 +3,7 @@
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\PadletController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -44,5 +45,6 @@ Route::group(['middleware' => ['api', 'auth.jwt']], function() {
 
     Route::post('auth/logout', [AuthController::class, 'logout']);
 });
-Route::get('/users', [\App\Http\Controllers\UserController::class, 'getAllUsers']);
+
+Route::get('/users', [UserController::class, 'getAllUsers']);
 

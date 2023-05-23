@@ -25,9 +25,8 @@ return new class extends Migration
                 ->references('id')->on('padlets')
                 ->onDelete('cascade');
 
-
             //fk field:
-            $table->bigInteger('user_id')->unsigned();//->default('1');
+            $table->bigInteger('user_id')->unsigned();
 
             //constraint:
             $table->foreign('user_id')

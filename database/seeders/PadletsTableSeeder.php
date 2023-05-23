@@ -33,21 +33,16 @@ class PadletsTableSeeder extends Seeder
         $padlet1->images()->saveMany([$image1]);
 
         $like1 = new Like();
-//        $like1->value = "1";
         $like1->user_id = "1";
         $padlet1->likes()->save($like1);
 
         $like2 = new Like();
-//        $like2->value = "1";
         $like2->user_id = "2";
         $padlet1->likes()->save($like2);
 
         $like3 = new Like();
-//        $like3->value = "1";
         $like3->user_id = "3";
         $padlet1->likes()->save($like3);
-
-
 
 
         $comment1 = new Comment();
@@ -55,20 +50,13 @@ class PadletsTableSeeder extends Seeder
         $comment1->user_id = "1";
         $padlet1->comments()->save($comment1);
 
-
-//        $user = User::all()->where('email', "hallo@simona.at");
-//        $padlet1->users()->sync($user);
-//        $padlet1->save();
-
         $padlet2 = new Padlet();
         $padlet2->title = "Sammlung von Lieblingskatzennamen";
         $padlet2->description = "Felix, Moritz, Marty, Gloria, Pauli, Fips, Zoe. Kommentiert gerne mit euren liebsten Katzennamen :)";
         $padlet2->is_private = true;
         $padlet2->save();
 
-
         $like4 = new Like();
-//        $like4->value = "1";
         $like4->user_id = "2";
         $padlet2->likes()->save($like4);
 
@@ -80,25 +68,9 @@ class PadletsTableSeeder extends Seeder
         $viewer->pivot->user_role = "viewer";
         $viewer->pivot->save();
 
-        $viewer = $padlet2->users->where('first_name', "Alina")->first(); //funktioniert nur an einzelnen user -> keine arrays
+        $viewer = $padlet2->users->where('first_name', "Alina")->first();
         $viewer->pivot->user_role = "editor";
         $viewer->pivot->save();
-
-
-//        $user1 = User::all()->where('email', "=", "hallo@mjk-media.com")->first();
-//        $user1->first_name = "Susi";
-//        $user1->save();
-
-
-//        $padlet = Padlet::find(1);
-//        $padlet->title = "neu umbenannt ;)";
-//        foreach ($padlet->users as $user){
-//            $user->pivot->user_role = "viewer";
-//            $user->pivot->save();
-//        }
-//        $padlet->save();
-
-
 
         $padlet1_users = User::all()->where('email', "hallo@simona.at");
         $padlet1->users()->sync($padlet1_users);
@@ -112,7 +84,6 @@ class PadletsTableSeeder extends Seeder
         $newuser->pivot->user_role = "viewer";
         $newuser->pivot->save();
         $padlet1->save();
-
 
         $padlet3 = new Padlet();
         $padlet3->title = "Padlet von anonymem Nutzer";

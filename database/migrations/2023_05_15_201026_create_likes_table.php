@@ -14,9 +14,6 @@ return new class extends Migration
     public function up()
     {
         Schema::create('likes', function (Blueprint $table) {
-//            $table->id();
-//            $table->integer('value')->default('0');
-
             //fk field:
             $table->bigInteger('padlet_id')->unsigned();
 

@@ -133,7 +133,6 @@ class PadletController extends Controller
                 //remove possible multiple user ids (if user is for example added twice):
                 $user_ids = array_unique($user_ids);
                 $user_ids = array_values($user_ids);
-
                 $padlet->users()->sync($user_ids);
 
                 //set right roles to users
